@@ -43,7 +43,7 @@
 
 **例外（须该 E* 影响面=路由，且用户点名该编号，不随「全部采纳」）**：仓库根 `SKILL.md` 的路由/触发句。
 
-**默认不改**：`skills/patent-application/`、`skills/patent-reader/`、`skills/patent-search/`、`skills/patent-oa/`、`skills/patent-exam-policy/`、`skills/patent-docket/`。
+**默认不改**：`skills/patent-application/`、`skills/patent-reader/`、`skills/patent-search/`、`skills/patent-oa/`、`skills/patent-exam-policy/`、`skills/patent-docket/`、`skills/patent-map/`。
 
 ## 简报结束时（默认，未改技能）
 

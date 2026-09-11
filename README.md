@@ -77,19 +77,23 @@
 </tr>
 </table>
 
-### 专利通俗解读
+### 专利通俗解读 · 地图探索
 
 <table width="100%" border="1" cellpadding="12" cellspacing="0">
 <tr>
-<th width="50%" align="center">Obsidian 关系图<br><sub>知识图谱与多色节点</sub></th>
-<th width="50%" align="center">解读 Canvas<br><sub>叙事故事线 · 术语 · 公开线索</sub></th>
+<th width="33%" align="center">Obsidian 关系图<br><sub>知识图谱与多色节点</sub></th>
+<th width="33%" align="center">解读 Canvas<br><sub>叙事故事线 · 术语 · 公开线索</sub></th>
+<th width="34%" align="center">专利地图<br><sub>地形沙盘 · 四象限 · 引证网络 · 功效矩阵</sub></th>
 </tr>
 <tr>
-<td width="50%" valign="top" align="center">
+<td width="33%" valign="top" align="center">
 <img src="docs/效果例-obs图谱.jpg" alt="Obsidian 关系图：解读笔记、术语与 Canvas 知识图谱" width="100%" />
 </td>
-<td width="50%" valign="top" align="center">
+<td width="33%" valign="top" align="center">
 <img src="docs/效果例-解读.jpg" alt="专利解读 Canvas：叙事、权要、术语与公开线索图谱" width="100%" />
+</td>
+<td width="34%" valign="top" align="center">
+<img src="docs/效果例-专利地图.jpg" alt="专利地图：地形沙盘、申请人四象限、同族引证、技术功效矩阵与统计仪表盘" width="100%" />
 </td>
 </tr>
 </table>
@@ -141,9 +145,16 @@
 <tr>
 <td nowrap><a href="skills/patent-reader/README.md"><code style="white-space:nowrap">patent-reader</code></a></td>
 <td nowrap>通俗解读</td>
-<td>专利全文读不下去：公开号或 PDF 丢进来，换成普通人能看懂的笔记和图谱；推进 Obsidian 后能串起多件专利关联、画出专利地图</td>
+<td>专利全文读不下去：公开号或 PDF 丢进来，换成普通人能看懂的笔记和图谱；推进 Obsidian 后能串起多件专利关联</td>
 <td>「读专利」</td>
 <td nowrap><a href="skills/patent-reader/README.md">详情</a></td>
+</tr>
+<tr>
+<td nowrap><a href="skills/patent-map/README.md"><code style="white-space:nowrap">patent-map</code></a></td>
+<td nowrap>专利地图</td>
+<td>解读入库攒下来的案子摊开成图：语义地形、申请人四象限、同族引证网络、技术功效矩阵、仪表盘；本机独立服务，浏览器打开即可探索</td>
+<td>「专利地图」· 「案例地图」</td>
+<td nowrap><a href="skills/patent-map/README.md">详情</a></td>
 </tr>
 <tr>
 <td nowrap><a href="skills/patent-oa/README.md"><code style="white-space:nowrap">patent-oa</code></a></td>

@@ -56,6 +56,7 @@ git clone <本仓库 URL> "$env:USERPROFILE\.cursor\skills\patent-disclosure-ski
 - `skills/patent-application/prompts/`（申请文件四件套；须指定交底目录）
 - `skills/patent-docket/prompts/`（交底到申请一趟串起来；须显式）
 - `skills/patent-reader/prompts/`（通俗解读；含本包 `fill_*`）
+- `skills/patent-map/prompts/`（专利地图；须显式）
 
 Cursor 也会扫描 **`~/.claude/skills/`**、项目内 **`.claude/skills/`** 等路径；详见 Cursor 官方文档与当前版本设置项。
 
@@ -225,7 +226,10 @@ $env:PATENT_READER_GLOSSARY_DIR = "Research/术语"
 
 ```bash
 pip install -r skills/patent-reader/tools/requirements.txt   # PDF：pymupdf
+pip install -r skills/patent-map/tools/requirements.txt     # 可选：专利地图语义地形（fastembed，不含 PyTorch）
 ```
+
+专利地图向量模型与加速副本默认在文档目录 `{Documents}/patent-disclosure-skill/patent-map/`（与 oa 同级，`PATENT_MAP_HOME` 可覆盖），不要下到工作区。可先跑 `python skills/patent-map/tools/ensure_model.py`。
 
 **首次使用**：解读**入库时会自动**初始化库（CSS、Bases、索引、关系图配色）。用户只需安装 Obsidian、配置库路径，并（可选）在社区插件市场安装 Dataview 等——步骤与插件清单见 **`skills/patent-reader/docs/obsidian-setup-guide.md`**。交付后 Agent 按 **`skills/patent-reader/prompts/obsidian_plugin_guide.md`** 引导可选插件。
 
