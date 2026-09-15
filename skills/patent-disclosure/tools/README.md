@@ -1,6 +1,6 @@
 # 交底包 tools
 
-本目录是 **patent-disclosure** 的脚本根：浏览器、docx、mermaid、公式、CAD、线稿，以及 `crawl/` 轻量查新。
+本目录是 **patent-disclosure** 的脚本根：浏览器、docx、mermaid、公式、CAD、线稿，以及 `crawl/` 轻量查新、`fence/` 保护型 1+N。
 
 整仓安装时从仓库根调用：`python skills/patent-disclosure/tools/…`。单独拷走本包时，本目录即为 `tools/`。
 
@@ -62,6 +62,15 @@ python tools/check_formula_plan.py -i outputs/case/formula_plan.yaml --eval
 ```
 
 成文纪律见 **`skills/patent-disclosure/prompts/invention/disclosure_builder.md` §7.7**。
+
+## 专利布局 / 保护型 1+N（旁路）
+
+脚本在 **`tools/fence/`**（与 `crawl/` 一样单独成目录）。细则见 `tools/fence/README.md`。
+
+```bash
+python tools/fence/check_layout.py --family outputs/案/fence/family.yaml --matrix outputs/案/fence/matrix.yaml
+python tools/fence/check_scorecard.py --table
+```
 
 ## 线稿规划（成文前必做）
 
