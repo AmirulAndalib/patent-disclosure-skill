@@ -8,9 +8,10 @@
 
 | 脚本 | 作用 |
 |------|------|
-| **`crawl/cnipa_epub_search.py`** | **（Step 5 优先）** 一步拉取+解析，不落盘；**一词一页**；**`--type invention\|utility_model\|design\|all`** |
+| **`crawl/cnipa_epub_search.py`** | **（Step 5 优先）** 一步拉取+解析，不落盘；**一词一页**；**`--type invention\|utility_model\|design\|all`**；`--class` 默认 1×1 |
 | **`crawl/cnipa_epub_crawler.py`** | 拉取并默认保存结果页 HTML |
 | **`crawl/cnipa_epub_parse.py`** | 仅解析已保存 HTML |
+| **`crawl/cnipa_epub_wait.yaml`** | 公布站等待与收口上限（中文注释）；脚本优先读 YAML，缺文件回退 `cnipa_epub_wait.DEFAULTS` |
 | **`patent_type.py`** | 类型别名、国知局 checkbox、Google Patents 查询提示 |
 
 依赖：`pip install playwright`（或根目录 `requirements.txt`）。浏览器见 **`tools/browser.py`**。查新说明见 **`prompts/prior_art_search.md`**。
