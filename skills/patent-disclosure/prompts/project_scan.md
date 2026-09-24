@@ -29,7 +29,8 @@
 
 - 大仓库先用搜索 / 语义检索定位关键文件，再精读。
 - 记录**引用路径或文件名**，便于在交底书中写「参见某设计」时脱敏表述。
-- 凡用户指定的扫描根内出现 **`.docx` / `.pptx` / `.pdf`**，**必须**按下一节 **「Office 文档与 PDF」** 先转 Markdown 再读，不可跳过或只扫纯文本而漏掉 Office/PDF。`node_modules/`、`dist/`、`build/` 等目录下的文件跳过。不要去扫未指定的整仓。
+- 凡用户指定的扫描根内出现 **`.tex`**：**先 `Read prompts/tex_scan.md` 再按其执行**（按需加载；无 `.tex` **不要**读该文件）。不可只读某一章、不可用同名 PDF 覆盖源码公式。无 `.tex` 则跳过，不向用户索要。
+- 凡用户指定的扫描根内出现 **`.docx` / `.pptx` / `.pdf`**，**必须**按 **「Office 文档与 PDF」** 先转 Markdown 再读，不可跳过或只扫纯文本而漏掉 Office/PDF。`node_modules/`、`dist/`、`build/` 等目录下的文件跳过。不要去扫未指定的整仓。
 - 凡扫描树内可能有 CAD / 三维文件，**必须**按 **「CAD / STEP（可选，默认关闭）」** 执行分类；**不得**在用户未确认时安装 STEP 依赖或运行 `step_to_views.py`。
 
 ## CAD / STEP（可选，默认关闭）
@@ -117,7 +118,7 @@ Agent **不得**因「只能舒适读取文本」而**遗漏**扫描根内的 Wo
 
    Word / PPT 需已 `pip install -r requirements.txt`。PDF 为可选依赖：`pip install -r skills/patent-disclosure/tools/requirements-pdf.txt`（pymupdf）。未装 pymupdf 时按脚本 stderr 提示安装，**不要**改去直接 Read 二进制 PDF。输出旁会生成 **`{md 主名}_media/`**，内为嵌入图，**以生成的 `.md` 正文与图片引用为扫描依据**（PDF 的图跟在对应页标题下）。
 3. **再读**：**`Read`** 上述新生成的 `.md`（及必要时扫一眼 `_media` 文件名用于脱敏引用），与原有 `.md`、代码**同等对待**，摘要进专利点材料表。
-4. **解析重点**：表格、编号列表、**PPT 每页标题与正文**、**Word 修订区以外的正文**、**备注**（`pptx_to_md` 会写入「备注」小节）、**PDF 每页正文与当页图片**——均属可专利化叙述来源。
+4. **解析重点**：表格、编号列表、**PPT 每页标题与正文**、**Word 修订区以外的正文**、**备注**（`pptx_to_md` 会写入「备注」小节）、**PDF 每页正文与当页图片**——均属可专利化叙述来源。PDF 文本层对公式不可靠；同目录有 `.tex` 时按 **`prompts/tex_scan.md`**（公式以源码为准，勿把 PDF 转 md 当公式再读一遍）。
 
 ## 图片与裸图目录（默认不识图）
 
@@ -145,6 +146,7 @@ Agent **不得**因「只能舒适读取文本」而**遗漏**扫描根内的 Wo
 | 路径 | 动作 |
 |------|------|
 | `docs/architecture.md` | 直接 Read |
+| `tex/main.tex` 及 `\input` 链 | 先 **`Read prompts/tex_scan.md`**，按其引用图处理（见 `tex/README.md`），并写 `tex_formula_inventory.md` |
 | `docs/sample_architecture_review.docx` | **先** `tools/docx_to_md.py` → 再 Read 生成的 `.md` |
 | `docs/sample_scheduler_deck.pptx` | **先** `tools/pptx_to_md.py` → 再 Read 生成的 `.md` |
 | `docs/sample_assets/*.png` | **跳过**单独精读（内容已由 Office 内嵌图 + 转换 MD 覆盖） |
