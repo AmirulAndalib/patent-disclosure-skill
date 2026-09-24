@@ -29,7 +29,7 @@
 
 - 大仓库先用搜索 / 语义检索定位关键文件，再精读。
 - 记录**引用路径或文件名**，便于在交底书中写「参见某设计」时脱敏表述。
-- 凡出现 **`.docx` / `.pptx` / `.pdf`**，**必须**按下一节 **「Office 文档与 PDF」** 先转 Markdown 再读，不可跳过或只扫纯文本而漏掉 Office/PDF。
+- 凡用户指定的扫描根内出现 **`.docx` / `.pptx` / `.pdf`**，**必须**按下一节 **「Office 文档与 PDF」** 先转 Markdown 再读，不可跳过或只扫纯文本而漏掉 Office/PDF。`node_modules/`、`dist/`、`build/` 等目录下的文件跳过。不要去扫未指定的整仓。
 - 凡扫描树内可能有 CAD / 三维文件，**必须**按 **「CAD / STEP（可选，默认关闭）」** 执行分类；**不得**在用户未确认时安装 STEP 依赖或运行 `step_to_views.py`。
 
 ## CAD / STEP（可选，默认关闭）
@@ -104,9 +104,9 @@ python skills/patent-disclosure/tools/run_step_to_views.py --enable-step-parse \
 
 **格式**：脚本仅支持 OOXML（**`.docx` / `.pptx`**）和 PDF（**`.pdf`**）。旧版 **`.doc` / `.ppt`** 须先在 Office / WPS 中**另存为**新格式后再走下列流程。
 
-Agent **不得**因「只能舒适读取文本」而**遗漏**项目内的 Word / PPT / PDF：**必须先转为 Markdown 再纳入扫描**，不能只扫 `.md` 与源码。
+Agent **不得**因「只能舒适读取文本」而**遗漏**扫描根内的 Word / PPT / PDF：**必须先转为 Markdown 再纳入扫描**，不能只扫 `.md` 与源码。范围由用户指定的扫描目录决定，不要按文件名自行决定转或不转。
 
-1. **发现**：在扫描目录内 **`Glob` 或列举** `*.docx`、`*.pptx`、`*.pdf`（含子目录，如 `docs/sample_*.docx`）。
+1. **发现**：在**用户指定的扫描目录**内 **`Glob` 或列举** `*.docx`、`*.pptx`、`*.pdf`（含子目录，如 `docs/sample_*.docx`）。跳过 `node_modules/`、`dist/`、`build/`、`.next/` 等。
 2. **转换（本仓库脚本）**：对每个文件执行（路径相对本技能仓库根）：
 
    ```bash
@@ -115,15 +115,15 @@ Agent **不得**因「只能舒适读取文本」而**遗漏**项目内的 Word 
    python skills/patent-disclosure/tools/pdf_to_md.py -i "<路径>/<名>.pdf" -o "<同目录或 docs>/<名>.md"
    ```
 
-   需已 `pip install -r requirements.txt`。输出旁会生成 **`{md 主名}_media/`**，内为嵌入图，**以生成的 `.md` 正文与图片引用为扫描依据**。
+   Word / PPT 需已 `pip install -r requirements.txt`。PDF 为可选依赖：`pip install -r skills/patent-disclosure/tools/requirements-pdf.txt`（pymupdf）。未装 pymupdf 时按脚本 stderr 提示安装，**不要**改去直接 Read 二进制 PDF。输出旁会生成 **`{md 主名}_media/`**，内为嵌入图，**以生成的 `.md` 正文与图片引用为扫描依据**（PDF 的图跟在对应页标题下）。
 3. **再读**：**`Read`** 上述新生成的 `.md`（及必要时扫一眼 `_media` 文件名用于脱敏引用），与原有 `.md`、代码**同等对待**，摘要进专利点材料表。
-4. **解析重点**：表格、编号列表、**PPT 每页标题与正文**、**Word 修订区以外的正文**、**备注**（`pptx_to_md` 会写入「备注」小节）、**PDF 每页正文**——均属可专利化叙述来源。
+4. **解析重点**：表格、编号列表、**PPT 每页标题与正文**、**Word 修订区以外的正文**、**备注**（`pptx_to_md` 会写入「备注」小节）、**PDF 每页正文与当页图片**——均属可专利化叙述来源。
 
 ## 图片与裸图目录（默认不识图）
 
 - **`sample_assets/`**、`node_modules/`、`dist/`、`build/`、`.next/`、`src/assets/`、前端切图等目录下的独立 `.png` / `.jpg` / `.webp`：**不作为** Step 2 必须逐个打开的对象。
 - **例外（才 Read 识图）**：用户**点名**某图片路径或说「这张图是场景示意，补充到交底书」；或某图已嵌在已转换 Office 的 `_media` 且正文当技术示意图引用。
-- Word/PPT 转换后，嵌入图已在 **`![](相对路径)`** 中体现，**以 Markdown 文本扫描为主**即可；不要为了找图去扫整个前端工程。
+- Word/PPT/PDF 转换后，嵌入图已在 **`![](相对路径)`** 中体现，**以 Markdown 文本扫描为主**即可；不要为了找图去扫整个前端工程。
 
 点名之后：理解图上对象与图例 → 判别（技术示意图 / 拓扑 / 流程照片 / 结构 / 界面截屏 / 图标切图 / 营销场景）→ 匹配章节。图标、切图、营销场景不入文并说明原因。技术示意图拷到案件 `assets/`，在 3.1 或第六章编号嵌入，不要改画。这与外观 `photo_scene`（棚拍/包装默认不入文）不是一类，不要套那条挡技术环境图。
 
