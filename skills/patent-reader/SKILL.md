@@ -11,6 +11,6 @@ user-invocable: false
 3. 笔记 / 自检：`obsidian_ofm_companion.md`、`patent_reader_self_check.md`
 
 工具在 **`tools/`**（本包 `extract/` · `analyze/` · `vault/`）。  
-中间产物：用户工作区 **`outputs/patent_reader/`**。PDF：`tools/extract/fetch_patent_pdf.py`；入库：`tools/vault/write_patent_obsidian_note.py`。
+中间产物：用户工作区 **`outputs/patent_reader/`**。PDF：`tools/extract/fetch_patent_pdf.py`；入库：`tools/vault/write_patent_obsidian_note.py`。独权特征行：`claim_features.json`（校验 `tools/analyze/validate_claim_features.py`）。说明书段落机读：`description_paragraphs.json`（含 `source_url`）。
 
 与交底互斥：解读不跑交底 Step 1–8。

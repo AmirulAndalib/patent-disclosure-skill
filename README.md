@@ -164,6 +164,13 @@
 <td nowrap><a href="skills/patent-oa/README.md">详情</a></td>
 </tr>
 <tr>
+<td nowrap><a href="skills/patent-chart/README.md"><code style="white-space:nowrap">patent-chart</code></a></td>
+<td nowrap>权利要求对照表</td>
+<td>把独权拆成特征格，和对比文件 / 产品 / 标准逐格填证据与强弱；主交付 Excel，不构成法律意见</td>
+<td>「对照表」· 「claim chart」</td>
+<td nowrap><a href="skills/patent-chart/README.md">详情</a></td>
+</tr>
+<tr>
 <td nowrap><a href="skills/patent-search/README.md"><code style="white-space:nowrap">patent-search</code></a></td>
 <td nowrap>著录检索</td>
 <td>人名、公司、分类号照查；更能扔一张产品图或一段权要，倒推出检索式去翻公布公告</td>

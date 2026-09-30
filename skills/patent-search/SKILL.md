@@ -8,7 +8,7 @@ user-invocable: false
 
 通用公布站高级查询，不是「个人清单技能」。个人公开清单只是一种用法。
 
-**先 `Read` `prompts/patent_search.md`。** 用户给单图或权要时再 `Read` `prompts/derived_query.md`。
+**先 `Read` `prompts/patent_search.md`。** 用户给单图或权要时再 `Read` `prompts/derived_query.md`。对照表派工或用户点名「按特征精排」时再 `Read` `prompts/covers_rank.md`（另出 `SEARCH-*.covers.md` / `.covers.json`，**不改**列表报告）。
 
 ## 默认少翻页
 
@@ -40,4 +40,5 @@ python skills/patent-search/tools/cnipa_search.py --inventor "姓名" --complete
 必须走高级查询字段（`#e72` 发明人、`#ti` 名称、`#abs` 摘要/简要说明、`#e51` 分类号等），禁止把发明人姓名填进首页综合框代替。申请号填表前去掉校验点。
 
 **不做**：Google Patents / 学术检索与跨库去重、PSS 登录站、权利要求全文/同族深挖、按附图视觉相似检索、按权利要求语义检索。单图/权要只生成公布站布尔式。  
+特征覆盖精排是列表**之后**的可选旁路（`covers_rank.md`），不是公布站语义检索。  
 **禁止**被交底 Step 5 当查新引擎调用。
