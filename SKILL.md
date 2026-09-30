@@ -22,7 +22,7 @@ allowed-tools: Read, Write, Edit, Grep, Glob, WebSearch, Bash
 | **解读** | 公开号 / PDF / 全文 → 通俗笔记 + 图谱 | `skills/patent-reader/SKILL.md` |
 | **对照表** | 独权特征 vs 对比文件 / 产品 / 标准，逐格证据与强弱（须点名；底稿，非法律意见） | `skills/patent-chart/SKILL.md` |
 | **专利地图** | 已解读入库的案例摊成五种图（语义地形） | `skills/patent-map/SKILL.md` |
-| **审查答复** | 审查意见问答与草稿；库薄时引导入库/蒸馏 | `skills/patent-oa/SKILL.md` |
+| **审查答复** | 审查意见问答与草稿；库薄时引导案例入库 | `skills/patent-oa/SKILL.md` |
 | **政策简报** | 对照国知局口径，说明对交底写法/本稿的影响；改技能仅为旁路 | `skills/patent-exam-policy/SKILL.md` |
 
 ## 路由判定表
@@ -39,7 +39,7 @@ allowed-tools: Read, Write, Edit, Grep, Glob, WebSearch, Bash
 | 读专利、给出公开号或 PDF 且目标是「读懂」；`/patent-read`、`/读专利` | 无 | 解读包（**优先**） | 不跑交底 Step 1–8；不自动进对照表 |
 | 对照表、claim chart、无效对照、FTO 初筛、侵权对照；`/patent-chart` — **须点名** | 左列须有公开号 / PDF / 权要 / `claim_features.json` / 交底 5.1；缺特征清单则派解读包 | 对照表包 | 不出法律意见；不调交底查新爬虫；禁止跨包 `tools/` |
 | 专利地图、案例地图；`/专利地图`、`/patent-map` — **须点名** | 需已有解读入库的 vault | 专利地图包 | 不因读专利自动进入 |
-| 审查意见、OA、案例入库、实务书；`/oa` — **须点名** | 库薄时先引导入库/蒸馏 | 审查答复包 | — |
+| 审查意见、OA、案例入库；`/oa` — **须点名** | 库薄时先引导入库 | 审查答复包 | — |
 | 政策简报、政策雷达；`/政策简报`、`/patent-brief`、`/patent-exam-policy`；「技能进化 / `/patent-evolve`」同一入口 — **须点名** | 无 | 政策简报包 | 仍**先出简报**；改技能只是旁路，无点名不改交底包以外的目录 |
 
 ## 通则

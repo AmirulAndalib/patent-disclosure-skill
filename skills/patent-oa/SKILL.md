@@ -1,6 +1,6 @@
 ---
 name: patent-oa
-description: "审查答复辅助：审查意见问答与草稿；库薄时引导案例入库与实务书蒸馏。须显式触发。"
+description: "审查答复辅助：审查意见问答与草稿；库薄时引导案例入库。须显式触发。"
 user-invocable: false
 ---
 
@@ -8,15 +8,15 @@ user-invocable: false
 
 ## 用途
 
-审查意见问答与内部草稿；用户确认采纳后才出意见陈述 Word。案例入库与实务书蒸馏是让检索变准的配套。草稿须复核后递交，不替代代理签字。
+审查意见问答与内部草稿；用户确认采纳后才出意见陈述 Word。案例入库是让检索变准的配套。草稿须复核后递交，不替代代理签字。
 
 ## 何时用
 
-须用户点名（审查意见 / OA / 入库 / 实务书，或 `/oa`）。库薄时先引导入库/蒸馏，不要挂进交底或解读的默认步骤。
+须用户点名（审查意见 / OA / 入库，或 `/oa`）。库薄时先引导入库，不要挂进交底或解读的默认步骤。
 
 ## 输入
 
-审查意见通知书、本申请文件、可选对比文件 PDF；向量配置可选。新颖性/创造性且通知书列了对比文件时，另用本包对照副本收三件套。手册蒸馏用本地书文件，不用 URL。
+审查意见通知书、本申请文件、可选对比文件 PDF；向量配置可选。新颖性/创造性且通知书列了对比文件时，另用本包对照副本收三件套。
 
 ## 步骤
 
@@ -24,9 +24,9 @@ user-invocable: false
 2. 向量可选：`prompts/configure_embedding.md` + `tools/config.py`
 3. 答复：`prompts/respond_office_action.md` + `tools/search_cases.py --pdf`；有对比文件的实体缺陷用**本包** `write_intake.py` / `emit_chart.py` 导出驳回映射（同一会话目录）
 4. 用户确认采纳：`assets/opinion_statement.md` → 本包 `tools/emit_opinion_docx.py`（禁止调用交底包）
-5. 入库（用户同意后）：`tools/ingest_case.py`；手册：`tools/ingest_playbook.py`
+5. 入库（用户同意后）：`tools/ingest_case.py`
 
-依赖：`pip install -r tools/requirements-oa.txt`。每次答复完整回答的末块为 **`## 交付后请确认`**，按 `prompts/soft_nudge.md` 看库是否太薄（历史案或手册少于 3），再决定是否加「案例入库」「实务书蒸馏」。
+依赖：`pip install -r tools/requirements-oa.txt`。每次答复完整回答的末块为 **`## 交付后请确认`**，按 `prompts/soft_nudge.md` 看库是否太薄（历史案少于 3），再决定是否加「案例入库」。
 
 ## 护栏
 
