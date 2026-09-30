@@ -12,7 +12,7 @@ user-invocable: false
 
 ## 何时用
 
-须用户点名（交底申请一起做、从零出交底和申请、一条龙、帮写交底再出申请、按清单改、会稿、案卷、`/patent-docket`）。只写交底、或已有交底只出四件套 → **不要**进案卷。不要自动进入审查答复或政策简报。
+须用户点名（交底申请一起做、从零出交底和申请、一条龙、帮写交底再出申请、按清单改、会稿、案卷、`/patent-docket`）。只写交底，或已有交底只出四件套时，不进案卷。
 
 ## 输入
 
@@ -20,7 +20,7 @@ user-invocable: false
 
 ## 步骤
 
-**先 `Read` `prompts/guardrails.md`，再 `Read` `prompts/intake.md`。** 禁止跳过 intake 直接派工。派工时 **`Read`** 对方 `SKILL.md` 并按该包执行。
+**先 `Read` `prompts/guardrails.md`，再 `Read` `prompts/intake.md`。** 派工时 **`Read`** 对方 `SKILL.md` 并按该包执行。对方包自己跑自己的 `tools/`。
 
 每次进入都走：
 
@@ -54,11 +54,9 @@ python skills/patent-docket/tools/emit_tracker.py --yaml outputs/docket/案件sl
 
 ## 护栏
 
-- 细则 `prompts/guardrails.md`。**禁止**调用其他子技能 `tools/`（含交底包、申请包）；需要脚本时让被派工的那一包自己跑。
+- 细则 `prompts/guardrails.md`。本包只改 `outputs/docket/`。
 - **禁止**为销问题清单条目而编造结构、参数、步骤、查新命中。
-- 存在 `blocking: true` 且 `status: open` 的 `ask_human` 时，不得 `dispatch_*`，不得加轮次。
-- 不做审查答复、政策简报、著录检索当会稿引擎、多 agent 分发。
 
 ## 产出物
 
-`outputs/docket/{case_id}/`：`docket.yaml`、`TRACKER.md`（脚本生成，不要手搓后与 yaml 分叉）、可选 `ROUND-{n}.md`。交底正文与四件套分别在交底包、申请包目录。收口对话末块标题 **交付后请确认**。
+`outputs/docket/{case_id}/`：`docket.yaml`、`TRACKER.md`（只由 `emit_tracker.py` 生成）、可选 `ROUND-{n}.md`。交底正文与四件套分别在交底包、申请包目录。收口对话末块标题 **交付后请确认**。

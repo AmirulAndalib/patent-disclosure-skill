@@ -12,7 +12,7 @@ user-invocable: false
 
 ## 何时用
 
-须用户点名（专利地图 / 案例地图 / `/专利地图` / `/patent-map`）。**不要**因「读专利 / 写交底 / 查新」自动进入。解读继续只入库；不要把服务焊进解读入库。
+须用户点名（专利地图 / 案例地图 / `/专利地图` / `/patent-map`）。解读继续只入库。
 
 ## 输入
 
@@ -30,7 +30,7 @@ python skills/patent-map/tools/serve_map.py
 
 stdout 机读前缀：`MAP_URL:` / `MAP_PORT:` / `MAP_VAULT:` / `MAP_SOURCE:` / `MAP_CACHE:` / `MAP_MODEL:`。端口由系统随机分配（`127.0.0.1:0`）。对话里把 URL 发给用户。
 
-地形图按解读短文向量摊开。加载名 `BAAI/bge-small-zh-v1.5`，磁盘只装 **Qdrant ONNX**（不要 PyTorch）。数据与模型默认目录：`{Documents}/patent-disclosure-skill/patent-map/`（与 oa 同级）。未装 `fastembed` 时图仍能开，地形退回 IPC 簇。
+地形图按解读短文向量摊开。加载名 `BAAI/bge-small-zh-v1.5`，磁盘只装 **Qdrant ONNX**（见 `prompts/guardrails.md` 取数）。数据与模型默认目录：`{Documents}/patent-disclosure-skill/patent-map/`（与 oa 同级）。未装 `fastembed` 时图仍能开，地形退回 IPC 簇。
 
 可选：
 
@@ -43,10 +43,7 @@ python skills/patent-map/tools/ensure_model.py
 
 ## 护栏
 
-- 细则 `prompts/guardrails.md`。禁止跨包调用解读包 `tools/`（读 vault 文件可以）。
-- 不要把图上的邻近写成侵权、无效或 FTO 结论。
-- 只绑 `127.0.0.1`，端口随机；不要绑定 `0.0.0.0` 或固定端口。
-- 不要把未读专利的灰节点当成已通读。库空不要叠示例数据。
+- 细则 `prompts/guardrails.md`。地图脚本只用本包 `tools/`；解读笔记直接读 vault 文件。
 
 ## 产出物
 

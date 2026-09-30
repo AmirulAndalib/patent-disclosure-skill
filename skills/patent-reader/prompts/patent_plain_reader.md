@@ -82,9 +82,11 @@ python skills/patent-reader/tools/patent_type.py --pub <公开号>
 
 实用 / 外观 → 按 `type_hooks.md` 填 Schema（**有公开号即应自动触发**，勿等用户口头说类型）。
 
-失败时：用本包 `tools/crawl/cnipa_epub_crawler.py` **核验**公开号/摘要（通常无全文 PDF）→ 请用户自备 PDF，或稍后重试 Google CDN。**勿**臆造 PDF URL，**勿**调用交底查新脚本。
+失败时按报错处理，不要编造 PDF 直链：「未收录」（新公开专利尚未上 Google）或「连不上」（检查网络后重试一次）→ 请用户提供 PDF。全文只走 Google Patents，正常 3 秒内完成；不要改走国知局下全文。
 
-**外观设计（公开号 `CN…S`）**：`fetch_patent_pdf.py` 常因无 CDN 失败。应改用：
+**对照表派工**：取证成功后只跑 `extract_patent_text.py`，校对权要树，写出 `claim_features.json`（含从权）和 `description_paragraphs.json`，把路径交回对照表。不写通俗笔记，不入库，不裁附图，不写技术功效。
+
+**外观设计（公开号 `CN…S`）**：Google 多无 PDF，`fetch_patent_pdf.py` 会报「有详情页但没有 PDF」。改用：
 
 ```bash
 python skills/patent-reader/tools/extract/fetch_design_views.py \

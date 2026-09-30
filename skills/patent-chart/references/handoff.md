@@ -6,7 +6,7 @@
 - 左列：已公开只要公开号；未公开只要 `left.paths`（`left.source=local`）
 - 右列：公开号列表、产品名、`right[].url`（产品页）、产品/标准文件路径、covers 旁路路径
 - 允许补 D 与否；用户明说「帮我补搜 / 对比文件未定」时写 `search_fill: true`（可专利性/无效允许右列暂空）
-- 派工解读：`Read` `skills/patent-reader/SKILL.md` 后按其流程执行；对照表调用须跑完 `claim_features.json`（默认含从权）。不要因 Obsidian 门禁停住。
+- 派工解读：`Read` `skills/patent-reader/SKILL.md` 后按其流程执行。对照表只要 `claim_features.json`（含从权）和 `description_paragraphs.json`。不写通俗笔记、不入库、不裁附图。全文用解读包 `fetch_patent_pdf.py`。失败则请用户给 PDF。
 - 派工检索：`Read` `skills/patent-search/SKILL.md` 后按其流程执行
 - 禁止未读对方 SKILL 就直接调其 `tools/`；禁止调交底 `cnipa_epub_search.py`
 - 对话收齐后：`outputs/patent-chart/{案件}/{会话}/intake.json`（以该会话磁盘为准）

@@ -104,8 +104,8 @@ python skills/patent-oa/tools/search_cases.py --pdf path/to/office_action.pdf \
 形式缺陷、清楚性、无对比文件：**跳过**。有 D 号的实体缺陷才做。
 
 1. 对照表与草稿写进**同一会话目录** `outputs/oa/{案件}/{会话}/`。  
-2. 用**本包**脚本导出，禁止调用 `skills/patent-chart/tools/`，禁止 import 对照包，禁止调交底包。对照导出脚本是对照包副本（`emit_chart.py` / `highlights.py` / `xlsx_minimal.py` / `write_intake.py`），改对照包时一并覆盖本包同名文件。  
-3. 三件套已在通知书/本申请里：不要再走对照表 ASK。  
+2. 导出用本包副本 `write_intake.py`、`emit_chart.py`（同目录还有 `highlights.py`、`xlsx_minimal.py`）。改对照包时覆盖本包同名文件。  
+3. 三件套已在通知书或本申请里：直接写入 intake。  
 4. 写入 intake 并导出：
 
 ```bash
@@ -114,11 +114,11 @@ python skills/patent-oa/tools/emit_chart.py --json {OA会话目录}/_payload.jso
 ```
 
 5. payload：`scene` 固定 `oa`；`rejections` 每条含 `item`（如第1条）、`statute`、`feature_ids`、`column_ids`、`examiner_view`（摘审查员原意）。xlsx 自动加「驳回映射」页。  
-6. **禁止**把对照表、`Fk` 编号、覆盖强弱写进意见陈述草稿或 Word。对话摘要只给 xlsx 路径。
+6. 对照表、`Fk`、覆盖强弱只留在 xlsx。意见陈述草稿和 Word 不写这些。对话摘要只给 xlsx 路径。
 
 ### 5. 事后摘要（简短，不挡流程）
 
-草稿落盘后，对话里只给一段摘要（约十行内），不要再问「请先勾选策略」。至少包括：
+草稿落盘后，对话里只给一段摘要（约十行内）。至少包括：
 
 - 本稿路径与各条主策略（及是否因分差≥15 才改选缩权）  
 - 若做了对照表：xlsx 路径（驳回映射在表内，不贴进对话）  
@@ -126,19 +126,19 @@ python skills/patent-oa/tools/emit_chart.py --json {OA会话目录}/_payload.jso
 - 命中案例 `case_id`（若有）  
 - **本稿为内部草稿，须复核后递交**  
 - 迭代：用户可指定策略重出（如「第 1 条改成修改权利要求再出一稿」）→ 重复第 4 步，另存新文件；可多次。  
-- **不要**在本步出 Word。换策略只出新草稿 md。  
+- 本步只出草稿 md。Word 见第 6 步。  
 - 摘要之后按 **`skills/patent-oa/prompts/soft_nudge.md`** 决定是否加库厚度提示（先 `--inventory`；不入草稿正文）。
 
 ### 6. 确认采纳 → 意见陈述正文 Word（须用户点名）
 
-仅当用户明确采纳某一份草稿（「用这一稿」「出 Word」「可以定稿」「采纳」等）后才做。**禁止**在首稿或换策略时自动出 Word。
+仅当用户明确采纳某一份草稿（「用这一稿」「出 Word」「可以定稿」「采纳」等）后才做。
 
 1. 以**被采纳的那份** `意见陈述草稿_*.md` 为来源；另存同一会话目录 `意见陈述_{时间戳}.md`（不覆盖草稿）。  
 2. **`Read`** `skills/patent-oa/assets/opinion_statement.md`，按模板写递交正文：著录表 + 逐条答复 + 修改说明 + 请求 + 附件。  
-3. 递交稿**只写给审查员看的话**。禁止写入内部 `strategy`、相对分、`case_id`、换策略说明、对照表、`Fk`、覆盖强弱。对比文件用公开号。  
+3. 递交稿只写给审查员看的话：不写内部 `strategy`、相对分、`case_id`、换策略说明、对照表、`Fk`、覆盖强弱。对比文件用公开号。  
 4. 缺申请号 / 发明名称 / 通知书名称时先问用户补全，**禁止编造**。发文日未知写「见通知书」。未改申请文件则第三节写「本申请文件未作修改。」  
 5. **不做**官方电子申请表格，**不**自动排版权利要求替换页（附件可只列「权要替换页另行准备」）。  
-6. 用本包脚本出 Word（**禁止**调用 `skills/patent-disclosure/tools/md_to_docx.py`）：
+6. 用本包脚本出 Word：
 
 ```bash
 python skills/patent-oa/tools/emit_opinion_docx.py \

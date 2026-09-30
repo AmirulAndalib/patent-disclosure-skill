@@ -1,8 +1,8 @@
 # 申请文件 · 外观
 
-`type=design` 后只走本文件。不要写发明式权要。不要导出 TIFF。
+`type=design` 后只走本文件。权要按外观书式写。视图检查与出图用本包脚本。
 
-先 **`Read`** 本包 `references/design_view_cnipa.md`（与交底同文）。禁止调用交底包 `tools/`。
+先 **`Read`** 本包 `references/design_view_cnipa.md`（与交底同文）。
 
 沿用交底 `appearance_schema` 的 `claimed_faces` / `omitted_views` / `line_scope`（非默认六视）和 `figure_plan`。`claimed_faces` / 图题用官方全称（主视图、后视图、左视图、右视图、俯视图、仰视图、立体图）。
 

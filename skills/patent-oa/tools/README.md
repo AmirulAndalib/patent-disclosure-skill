@@ -45,9 +45,9 @@ python skills/patent-oa/tools/emit_opinion_docx.py -i outputs/oa/案/会话/意�
 python skills/patent-oa/tools/emit_chart.py --json outputs/oa/案/会话/_payload.json --into outputs/oa/案/会话
 ```
 
-意见陈述 Word：**仅用户确认采纳某份草稿后**，按 `assets/opinion_statement.md` 写递交 md，再跑本包 `emit_opinion_docx.py`（`md_to_docx.py` 为交底包副本，禁止调用交底路径）。不做官方电子表单、不排版权要替换页。普通括号包 LaTeX 时 stderr 打印 `LATEX_DELIM:`，**不阻断**出 Word（陈述书可能引用权要原文括号）。
+意见陈述 Word：**仅用户确认采纳某份草稿后**，按 `assets/opinion_statement.md` 写递交 md，再跑本包 `emit_opinion_docx.py`（`md_to_docx.py` 是本包副本）。不做官方电子表单、不排版权要替换页。普通括号包 LaTeX 时 stderr 打印 `LATEX_DELIM:`，**不阻断**出 Word（陈述书可能引用权要原文括号）。
 
-对照表 xlsx：`emit_chart.py` / `highlights.py` / `xlsx_minimal.py` / `write_intake.py` 是 `skills/patent-chart/tools/` 的副本，禁止改一边。测试 `tests/test_chart_tools_sync.py` 会比对。
+对照表 xlsx：`emit_chart.py` / `highlights.py` / `xlsx_minimal.py` / `write_intake.py` 是 `skills/patent-chart/tools/` 的副本。改对照包时覆盖本包同名文件。测试 `tests/test_chart_tools_sync.py` 会比对。
 
 Obsidian 结构：`oa/cases/history/` · `oa/pending/` · `oa/drafts/` + `_OA索引` / `_OA看板.base` / `_OA关联.canvas`。
 

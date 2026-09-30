@@ -12,7 +12,7 @@ user-invocable: false
 
 ## 何时用
 
-须用户点名（政策简报 / 政策雷达 / 审查政策更新 / `/政策简报` / `/patent-brief` / `/patent-exam-policy`）。「技能进化 / `/patent-evolve`」同一入口，仍先出简报；只有用户再点名改技能时才 `Read` `apply_after_confirm.md`。不要挂进每次交底或解读的默认步骤。
+须用户点名（政策简报 / 政策雷达 / 审查政策更新 / `/政策简报` / `/patent-brief` / `/patent-exam-policy`）。「技能进化 / `/patent-evolve`」同一入口，仍先出简报；只有用户再点名改技能时才 `Read` `apply_after_confirm.md`。
 
 ## 输入
 
@@ -27,11 +27,8 @@ user-invocable: false
 
 ## 护栏
 
-- 细则 `prompts/guardrails.md`。**默认只出简报，不改技能。**
-- 无人值守自动改任何 `SKILL.md` / `prompts/**` / `references/**` 并提交。
-- 仅凭 B 源或无准确 URL 的传闻不得单独改技能。
-- 「全部采纳」时不得改到交底包白名单以外。未收到改技能确认前，禁止 Edit/Write 技能正文（简报落盘除外）。
+- 细则 `prompts/guardrails.md`。默认只出简报。用户点名改技能之后，才按 `apply_after_confirm.md` 改交底包白名单。
 
 ## 产出物
 
-`outputs/exam-policy/` 政策简报。对话末块标题 **交付后请确认**（口令「按简报改交底技能」「采纳 E…」「沉淀到 docs/」）。不要把「全部采纳」当成默认下一步。
+`outputs/exam-policy/` 政策简报。对话末块标题 **交付后请确认**（口令「按简报改交底技能」「采纳 E…」「沉淀到 docs/」）。

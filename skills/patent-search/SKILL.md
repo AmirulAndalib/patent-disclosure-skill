@@ -12,7 +12,7 @@ user-invocable: false
 
 ## 何时用
 
-用户要按著录字段查公布公告、个人公开清单、以图或权要生成检索式，或 `/patent-search`。对照表派工或用户点名「按特征精排」时再走 `covers_rank.md`。不要被交底 Step 5 当查新引擎调用。结果不得冒充交底查新。
+用户要按著录字段查公布公告、个人公开清单、以图或权要生成检索式，或 `/patent-search`。对照表派工或用户点名「按特征精排」时再走 `covers_rank.md`。
 
 ## 输入
 
@@ -20,9 +20,7 @@ user-invocable: false
 
 ## 步骤
 
-**先 `Read` `prompts/patent_search.md`。** 用户给单图或权要时再 `Read` `prompts/derived_query.md`。对照表派工或用户点名「按特征精排」时再 `Read` `prompts/covers_rank.md`。
-
-默认少翻页（阈值在 **`config.yaml`**）：`max_pages` 默认 3；`max_pages_hard` 默认 20 仅在探测不到「共 N 页」时启用。`page_size` 只是探测不到「每页 N 条」时的回退，不要用它估总条数。对话里用户说「多翻几页 / 翻 5 页」→ 传 `--max-pages N`（普通检索仍受 hard 限制）。**不要**一上来爬完全部分页。只有用户明确要求穷举清单时才加 `--complete`。`--complete` 第一页若读到「共 N 页」，按总页数翻完；读不到才用 `max_pages_hard`。采到总页数才能说「已翻完全部分页」或「还剩 x 页」。`complete: false` 时禁止称为「全部」。退出码 `3` 表示分页不完整。
+**先 `Read` `prompts/patent_search.md`。** 用户给单图或权要时再 `Read` `prompts/derived_query.md`。对照表派工或用户点名「按特征精排」时再 `Read` `prompts/covers_rank.md`。翻页口径以该文件「默认少翻页 / 完整性门禁」为准。
 
 ```bash
 python skills/patent-search/tools/cnipa_search.py --inventor "姓名" --applicant "单位"
@@ -31,14 +29,12 @@ python skills/patent-search/tools/cnipa_search.py --abstract "折叠 and 杯盖"
 python skills/patent-search/tools/cnipa_search.py --inventor "姓名" --complete
 ```
 
-单独拷走本包时：`python tools/cnipa_search.py …`。改版式只动 `tools/emit_search_report.py`。必须走高级查询字段（`#e72` 发明人、`#ti` 名称、`#abs` 摘要/简要说明、`#e51` 分类号等）。申请号填表前去掉校验点。机读前缀：`EPUB_SEARCH_MD:` / `EPUB_SEARCH_JSON:` / `EPUB_SEARCH_NOTE:` / `EPUB_SEARCH_INCOMPLETE:`。对话里告诉用户 Markdown 路径，不要只倒 JSON。
+单独拷走本包时：`python tools/cnipa_search.py …`。改版式只动 `tools/emit_search_report.py`。机读前缀：`EPUB_SEARCH_MD:` / `EPUB_SEARCH_JSON:` / `EPUB_SEARCH_NOTE:` / `EPUB_SEARCH_INCOMPLETE:`。对话里给出 Markdown 路径。
 
 ## 护栏
 
-- 禁止把发明人姓名填进首页综合框代替高级查询。
-- **禁止**被交底 Step 5 当查新引擎调用。
-- 不做 Google Patents / 学术检索与跨库去重、PSS 登录站、权利要求全文/同族深挖、按附图视觉相似检索、按权利要求语义检索。单图/权要只生成公布站布尔式。
-- 特征覆盖精排是列表**之后**的可选旁路，不是公布站语义检索。
+- 结果不得冒充交底查新。
+- 本包只做公布站高级查询。单图或权要只生成公布站布尔式。覆盖精排是列表之后的可选旁路。
 
 ## 产出物
 

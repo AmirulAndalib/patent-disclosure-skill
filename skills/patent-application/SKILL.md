@@ -12,7 +12,7 @@ user-invocable: false
 
 ## 何时用
 
-须用户点名（申请文件 / 申请底稿 / 申报材料 / 权利要求书 / `/申请底稿` / `/patent-apply`），并**指定交底材料目录**。案卷会稿调度本包时视为已点名，仍须有交底目录。不要因写交底、读专利或查新自动进入。
+须用户点名（申请文件 / 申请底稿 / 申报材料 / 权利要求书 / `/申请底稿` / `/patent-apply`），并**指定交底材料目录**。案卷会稿调度本包时视为已点名，仍须有交底目录。
 
 ## 输入
 
@@ -21,21 +21,17 @@ user-invocable: false
 ## 步骤
 
 1. **`Read`** `prompts/guardrails.md` → `intake.md`
-2. 已有申请产出上改稿（未要求整案重写）：**`Read`** `iteration_context.md` → `iteration.md`（新时间戳目录、出 Word、问题清单），然后结束，不要再走第 3–6 步
+2. 已有申请产出上改稿（未要求整案重写）：**`Read`** `iteration_context.md` → `iteration.md`（新时间戳目录、出 Word、问题清单），到此结束
 3. 跑 `tools/material_gate.py --case-dir <交底目录>`；退出码 2 则停
 4. 发明 / 实用新型：`claim_strategy.md` → `claims_builder.md` → `figure_plan.md` → `figures.md` → `specification_builder.md` → `numeral_register.md` → `consistency.md`
-5. 外观：先 `Read` `references/design_view_cnipa.md`，只走 `design_application.md`；跑本包 `check_design_views.py`；不跑 `compose_application_figure.py`
+5. 外观：先 `Read` `references/design_view_cnipa.md`，只走 `design_application.md`；跑本包 `check_design_views.py`
 6. 本包 `tools/emit_application_docx.py` 出 Word；**`Read`** `issues.md`，写 `问题清单.md`（不入正式文件），并在**同一条交付回复**末块 **`## 交付后请确认`** 给出路径、摘要条目、请用户先看清单
 
 整仓路径：`python skills/patent-application/tools/…`。
 
 ## 护栏
 
-- 细则 `prompts/guardrails.md`。禁止跨包调用其他子技能 `tools/`。
-- 未指定交底目录就开写；从聊天空写申请。
-- 外观案套用发明权要，或用 `compose_application_figure.py` 改交底原图像素。
-- 宣称已通过国知局附图审查或电子申请格式校验。
-- 覆盖上一版申请产出目录（用户明确要求覆盖除外）。不做 TIFF，不做请求书 / 费减 / CPCNS。
+- 细则 `prompts/guardrails.md`。Word 与附图脚本只用本包 `tools/`。
 
 ## 产出物
 

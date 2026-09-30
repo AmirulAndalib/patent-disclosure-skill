@@ -23,18 +23,14 @@ user-invocable: false
 1. **`Read`** `prompts/guardrails.md` → `intake.md`
 2. 向量可选：`prompts/configure_embedding.md` + `tools/config.py`
 3. 答复：`prompts/respond_office_action.md` + `tools/search_cases.py --pdf`；有对比文件的实体缺陷用**本包** `write_intake.py` / `emit_chart.py` 导出驳回映射（同一会话目录）
-4. 用户确认采纳：`assets/opinion_statement.md` → 本包 `tools/emit_opinion_docx.py`（禁止调用交底包）
+4. 用户确认采纳：`assets/opinion_statement.md` → 本包 `tools/emit_opinion_docx.py`
 5. 入库（用户同意后）：`tools/ingest_case.py`
 
 依赖：`pip install -r tools/requirements-oa.txt`。每次答复完整回答的末块为 **`## 交付后请确认`**，按 `prompts/soft_nudge.md` 看库是否太薄（历史案少于 3），再决定是否加「案例入库」。
 
 ## 护栏
 
-- 细则 `prompts/guardrails.md`。禁止跨包调用其他子技能 `tools/`（对照导出用本包副本）。
-- 未确认采纳不得出意见陈述 Word；不得把草稿当作已递交。
-- 禁止未脱敏入库含客户名、电话、未公开核心参数的原文。
-- 修改超原申请记载范围须标注风险。不要把对照表或 `Fk` 写入递交稿。
-- 不要把相对分写成授权率。不要将 API Key 写入仓库或回显完整密钥。
+- 细则 `prompts/guardrails.md`。对照导出用本包 `write_intake.py` / `emit_chart.py`。意见陈述 Word 用本包 `emit_opinion_docx.py`。
 
 ## 产出物
 
