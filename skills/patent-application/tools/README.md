@@ -4,6 +4,7 @@
 |------|------|--------|
 | `material_gate.py` | `APPLICATION_GATE:` | 0 齐全；2 缺材料；1 用法错误 |
 | `audit_claims.py` | `APPLICATION_CLAIMS:` | 0 无 ERROR；1 有 ERROR |
+| `plan_figures.py` | `APPLICATION_FIG_PLAN:` | 0 无 ERROR；1 有 ERROR |
 | `check_numeral_register.py` | `APPLICATION_NUMERALS:` | 0 无 ERROR；1 有 ERROR |
 | `render_invention_figures.py` | `APPLICATION_FIG:` | 0 已出 SVG；PNG 失败不单独当致命（看 png_fail） |
 | `check_support.py` | `APPLICATION_SUPPORT:` | 0 无 ERROR；1 有 ERROR |
@@ -17,6 +18,9 @@ python skills/patent-application/tools/render_invention_figures.py \
   --plan outputs/patent-application/{案}/figures/invention_figures.yaml \
   --out-dir outputs/patent-application/{案}/figures
 python skills/patent-application/tools/audit_claims.py outputs/patent-application/{案}/权利要求书.md
+python skills/patent-application/tools/plan_figures.py \
+  --claims outputs/patent-application/{案}/权利要求书.md \
+  --out outputs/patent-application/{案}/figures/figure_plan.yaml
 python skills/patent-application/tools/check_support.py --dir outputs/patent-application/{案}
 python skills/patent-application/tools/compose_application_figure.py \
   --source <线稿或场景图> --fig 3 --out-dir outputs/patent-application/{案}/figures

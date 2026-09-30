@@ -78,7 +78,8 @@
 ## 8.4 实用新型专项
 
 - [ ] 文头 **专利类型：实用新型**
-- [ ] 第三章可追溯 StructureSchema（部件/连接/布局）；`uncertain` 未写成既定公差
+- [ ] 第三章可追溯 StructureSchema（部件/连接/布局）；`uncertain` 未写成既定公差；未见件未编入 parts / 第五章
+- [ ] 已跑 `check_source_parts.py`（`SOURCE_PARTS: ok=1` 或 ERROR 已改稿）
 - [ ] 第五章为装置/结构书式，非纯方法独立点
 - [ ] 未把外观美感或算法步骤当作构造创新主线
 - [ ] 附图「如图 N」与 `figure_plan` 的 `fig`/`path` 一致（非散落 assets 临场挑选）

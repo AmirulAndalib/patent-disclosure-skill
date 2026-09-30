@@ -13,7 +13,7 @@ user-invocable: false
 | Step 1 | `prompts/intake.md` |
 | Step 2 | `prompts/project_scan.md`；有 `.tex` 再 `Read prompts/tex_scan.md` |
 | Step 3–4 | `prompts/invention/` · `utility_model/` · `design/` 挖点 |
-| 填表 / 线稿 | `prompts/fill_*`、`image_gen.md`、`*_lineart_*.md`；外观视图口径 `references/design_view_cnipa.md` |
+| 填表 / 线稿 | `prompts/fill_*`、`image_gen.md`、`*_lineart_*.md`；外观视图口径 `references/design_view_cnipa.md`；结构案成文前 `tools/check_source_parts.py` |
 | Step 5 | `prompts/prior_art_search.md`（轻量查新：3～4 个手段短语，公布模式每页 10 条，LLM 摘要精排） |
 | Step 5.5 | 同文件「**D1 锁定与区别特征 Fk**」：主比对钉一篇最接近 + 逐特征表（可 D2 补行）+ **三态门禁**，落 `查新与区别定位_*.md`。三态都进 Step 6；**不过**仍成文但创造性降级，禁止假 D1 / 空喊创新性强 |
 | Step 6 | `prompts/disclosure_preview.md` |

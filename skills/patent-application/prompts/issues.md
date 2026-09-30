@@ -4,7 +4,7 @@
 
 列出已选定写法之外的缺口，例如：保护范围是否过宽、交底歧义的备选、查新未复做、发明人未填（**记清单即可，不阻塞交付与案卷轮次**）、PNG 未生成、公式未转成 OMML、对照表对不上、所述缺少前置、摘要超 300 字。  
 外观另列：落面未覆盖、省略原因用语不合指南、图照片混用、投影关系/比例不一致、图幅或 DPI 超限、线稿含尺寸线/中心线/阴影线/图内图号、透视棚拍充当正投影、默补假面。  
-抄 `APPLICATION_CLAIMS` / `APPLICATION_NUMERALS` / `APPLICATION_FIG` / `APPLICATION_SUPPORT` 的结果。
+抄 `APPLICATION_CLAIMS` / `APPLICATION_NUMERALS` / `APPLICATION_FIG` / `APPLICATION_FIG_PLAN` / `APPLICATION_SUPPORT` 的结果。`标号核对.md` 中的串号、未登记号一并列入。
 
 不要因此删掉或停写四件套（外观为简要说明与视图）。无额外缺口也仍须落盘清单（可只含机器检查）。外观视图不合格**只记本清单**，不改交底原图像素。
 
