@@ -273,6 +273,42 @@ class EmitChartTests(unittest.TestCase):
             paths = write_chart_bundle(raw, into=session)
             self.assertEqual(paths["xlsx"].name, "对照表-FTO初筛-20260929-232749.xlsx")
 
+    def test_oa_rejection_sheet(self) -> None:
+        raw = _payload()
+        raw["scene"] = "oa"
+        raw["rejections"] = [
+            {
+                "id": "R1",
+                "item": "第1条",
+                "statute": "专利法第22条第3款",
+                "examiner_view": "审查员认为权利要求1相对于对比文件1不具备创造性。",
+                "feature_ids": ["F1", "F3"],
+                "column_ids": ["D1"],
+            }
+        ]
+        chart = normalize_chart(raw)
+        self.assertEqual(chart["rejections"][0]["item"], "第1条")
+        self.assertEqual(
+            chart_xlsx_name(chart, "20260930-093000"),
+            "对照表-审查答复-20260930-093000.xlsx",
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            session = Path(tmp) / "20260930-093000"
+            paths = write_chart_bundle(raw, into=session)
+            with zipfile.ZipFile(paths["xlsx"]) as zf:
+                wb = zf.read("xl/workbook.xml").decode("utf-8")
+                sheet4 = zf.read("xl/worksheets/sheet4.xml").decode("utf-8")
+        self.assertEqual(paths["xlsx"].name, "对照表-审查答复-20260930-093000.xlsx")
+        self.assertIn('name="驳回映射"', wb)
+        self.assertNotIn('name="路径备忘"', wb)
+        self.assertIn("第1条", sheet4)
+        self.assertIn("专利法第22条第3款", sheet4)
+        self.assertIn("待核", sheet4)
+        self.assertIn(">F3</t>", sheet4)
+        self.assertLess(sheet4.find(">F3</t>"), sheet4.find(">F1</t>"))
+        self.assertNotIn("应当无效", sheet4)
+        self.assertNotIn("可以自由实施", sheet4)
+
     def test_fto_risk_sheet_needs_review(self) -> None:
         raw = _payload()
         raw["scene"] = "fto"

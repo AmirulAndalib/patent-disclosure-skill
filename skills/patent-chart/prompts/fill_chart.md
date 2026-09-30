@@ -50,13 +50,14 @@
 | `invalidity` | 路径备忘 | 哪份对照覆盖哪条 Fk、未覆盖、最强、可点出处 |
 | `fto` | 风险清单 | 覆盖强弱 → 风险 高/中/低/未见；高标「须人审」 |
 | `infringement` | 证据缺口 | 弱/未见排前；`missing` 写成待补证据 |
+| `oa` | 驳回映射 | 驳回点 × Fk × D；弱/未见排前。不写入意见陈述正文 |
 | `sep` / `patentability` | （不加） | 只用四页矩阵 |
 
 禁止写「应当无效」「构成侵权」「可以自由实施」。
 
 ## 写入 payload 后导出
 
-字段：`scene`、`left`、`features`、`columns`、`cells`、`highlights`。
+字段：`scene`、`left`、`features`、`columns`、`cells`、`highlights`；审查答复另加 `rejections`（`item`、`statute`、`feature_ids`、`column_ids`、`examiner_view`）。
 
 ```bash
 python skills/patent-chart/tools/emit_chart.py \
@@ -64,4 +65,4 @@ python skills/patent-chart/tools/emit_chart.py \
   --into outputs/patent-chart/{案件}/{会话}
 ```
 
-看 `CHART_XLSX:`（给人传）以及 `CHART_JSON:`（再导出）。xlsx 含「总览 / 对照表 / 明细 / 图例」；按 `scene` 自动加场景页（无效→路径备忘，FTO→风险清单，侵权→证据缺口），不要手写这几页。不要再写 md/yaml，不要把 JSON 全文贴进对话。
+看 `CHART_XLSX:`（给人传）以及 `CHART_JSON:`（再导出）。xlsx 含「总览 / 对照表 / 明细 / 图例」；按 `scene` 自动加场景页（无效→路径备忘，FTO→风险清单，侵权→证据缺口，审查答复→驳回映射），不要手写这几页。不要再写 md/yaml，不要把 JSON 全文贴进对话。

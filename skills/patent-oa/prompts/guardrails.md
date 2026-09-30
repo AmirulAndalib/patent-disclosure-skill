@@ -16,7 +16,7 @@
 - 无检索命中（或未说明库为空）就长篇「糊弄」意见陈述  
 - 修改超原申请记载范围却不标注风险  
 - 无人审确认即将草稿当作已递交文件，或未确认就出意见陈述 Word  
-- 跨包调用交底包 `md_to_docx.py` 或其他子技能 `tools/`（本包用 `tools/md_to_docx.py` / `emit_opinion_docx.py` 副本）  
+- 跨包调用交底包 `md_to_docx.py`、对照包 `tools/` 或其他子技能 `tools/`（本包用 `md_to_docx.py` / `emit_opinion_docx.py` 以及对照导出脚本的副本）  
 - 将 API Key 写入仓库或在回复中回显完整密钥  
 - 用书的 URL 下载/蒸馏；跳过预读把无关材料写入 `oa/playbooks/`（用户强烈要求除外）  
 - 把经验手册混入 `cases/history` 或案例向量，并当作 `case_id` 引用  
@@ -44,6 +44,8 @@
 
 用户说换策略（如「按修改权利要求再出一稿」）→ 另存新时间戳草稿，保留旧稿，**仍不出 Word**。
 
-用户明确采纳某一份草稿（「用这一稿 / 出 Word / 可以定稿 / 采纳」）→ **`Read`** `assets/opinion_statement.md`，写成 `outputs/oa/{案件}/意见陈述_{时间戳}.md` 后跑本包 `tools/emit_opinion_docx.py`。递交稿不得含内部策略分与 `case_id`。
+用户明确采纳某一份草稿（「用这一稿 / 出 Word / 可以定稿 / 采纳」）→ **`Read`** `assets/opinion_statement.md`，写成 `outputs/oa/{案件}/{会话}/意见陈述_{时间戳}.md` 后跑本包 `tools/emit_opinion_docx.py`。递交稿不得含内部策略分、`case_id`、对照表或 `Fk`。
+
+新颖性/创造性且通知书列了对比文件时，出草稿后用**本包** `write_intake.py` / `emit_chart.py` 把对照表写到同一会话目录；不要把表写进陈述正文。不要调用对照包路径。
 
 摘要之后按 **`skills/patent-oa/prompts/soft_nudge.md`** 决定是否在对话末尾加库厚度提示（至多 2 句；不入草稿正文）。

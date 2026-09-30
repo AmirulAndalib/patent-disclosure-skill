@@ -11,8 +11,8 @@ user-invocable: false
 
 1. **`Read`** `prompts/guardrails.md` → `intake.md`
 2. 向量可选：`prompts/configure_embedding.md` + `tools/config.py`
-3. 答复：`prompts/respond_office_action.md` + `tools/search_cases.py --pdf`
-4. 用户确认采纳：`assets/opinion_statement.md` → `tools/emit_opinion_docx.py`
+3. 答复：`prompts/respond_office_action.md` + `tools/search_cases.py --pdf`；有对比文件的实体缺陷用**本包** `emit_chart.py` 导出驳回映射  
+4. 用户确认采纳：`assets/opinion_statement.md` → `tools/emit_opinion_docx.py`  
 5. 入库（用户同意后）：`tools/ingest_case.py`；手册：`tools/ingest_playbook.py`
 
 依赖：`pip install -r tools/requirements-oa.txt`。

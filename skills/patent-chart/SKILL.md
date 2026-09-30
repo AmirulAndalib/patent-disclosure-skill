@@ -20,4 +20,4 @@ user-invocable: false
 5. `python skills/patent-chart/tools/emit_chart.py --json <payload.json> --into <INTAKE_DIR>`
 6. 交付末块 **`Read` `prompts/delivery_confirm.md`**
 
-产出：`outputs/patent-chart/{案件}/{会话}/` 下 **`intake.json`（本轮输入归档）** + **`对照表-{场景}-{时间戳}.xlsx`（主交付，可直接分发）** + **`chart.json`（机读底稿，供再导出）**。xlsx 固定含总览 / 对照表 / 明细 / 图例；`invalidity` 加「路径备忘」，`fto` 加「风险清单」，`infringement` 加「证据缺口」。不要把 `chart.json` 整份贴进对话。材料在对话里收集，不够就提问，收齐才落盘分析。**不出 `.md` / `.yaml` 对照副本，不出 `.docx`，不出 HTML 工作面**。**不出法律意见**。
+产出：`outputs/patent-chart/{案件}/{会话}/` 下 **`intake.json`（本轮输入归档）** + **`对照表-{场景}-{时间戳}.xlsx`（主交付，可直接分发）** + **`chart.json`（机读底稿，供再导出）**。xlsx 固定含总览 / 对照表 / 明细 / 图例；`invalidity` 加「路径备忘」，`fto` 加「风险清单」，`infringement` 加「证据缺口」，`oa` 加「驳回映射」。不要把 `chart.json` 整份贴进对话。材料在对话里收集，不够就提问，收齐才落盘分析。**不出 `.md` / `.yaml` 对照副本，不出 `.docx`，不出 HTML 工作面**。**不出法律意见**。
