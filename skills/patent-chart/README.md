@@ -14,7 +14,7 @@
 <tr><td nowrap width="1%"><strong>对照原语</strong></td><td>行是 Fk，列是对照对象；每格摘录、对应说明、覆盖强弱、可点出处</td></tr>
 <tr><td nowrap width="1%"><strong>收集材料</strong></td><td>对话里锁定类型、左列、右列；不够就按题问，<strong>不齐不分析</strong>。收齐后写入会话目录 <code>intake.json</code></td></tr>
 <tr><td nowrap width="1%"><strong>派工</strong></td><td>先读对方 SKILL.md，再按其流程跑该包工具；缺特征清单走解读，补 D 走检索。对照表调用解读时不因 Obsidian 暂停</td></tr>
-<tr><td nowrap width="1%"><strong>交付</strong></td><td><strong><code>chart.xlsx</code> 主交付</strong>（总览热力可进入明细、四列对照、图例单元格填充）；<code>chart.json</code> 机读底稿。不出 md/yaml 副本、不出 Word、不出 HTML 工作面</td></tr>
+<tr><td nowrap width="1%"><strong>交付</strong></td><td><strong>对照表 xlsx 主交付</strong>（文件名 <code>对照表-{场景}-{时间戳}.xlsx</code>，便于分发；总览热力可进入明细、四列对照、图例单元格填充；无效加路径备忘、FTO 加风险清单、侵权加证据缺口）；<code>chart.json</code> 机读底稿。不出 md/yaml 副本、不出 Word、不出 HTML 工作面</td></tr>
 </tbody>
 </table>
 

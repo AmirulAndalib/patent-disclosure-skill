@@ -29,6 +29,6 @@
 右边我还没有指定对比文件，请按这件专利的权要去检索补 D，连从权一起拆。
 ```
 
-预期：`search_fill: true`，写入该会话 `intake.json`（`INTAKE_OK:1`），**这之后**才派专利解读（要 `claim_features.json`，默认含从权；Obsidian 未就绪也继续）和补搜 covers，再填格导出 `chart.xlsx`。
+预期：`search_fill: true`，写入该会话 `intake.json`（`INTAKE_OK:1`），**这之后**才派专利解读（要 `claim_features.json`，默认含从权；Obsidian 未就绪也继续）和补搜 covers，再填格导出 `对照表-可专利性-{会话时间戳}.xlsx`。
 
 若第一句就被直接出表、或跳过提问去编结构，说明 intake 没按对话收集走。

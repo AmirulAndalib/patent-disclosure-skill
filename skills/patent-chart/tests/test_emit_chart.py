@@ -13,6 +13,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 
 from emit_chart import (
     DISCLAIMER,
+    chart_xlsx_name,
     dump_yaml,
     main,
     normalize_chart,
@@ -74,7 +75,7 @@ class EmitChartTests(unittest.TestCase):
         self.assertIn("F3 × D1", text)
         self.assertIn("| F1 |", text)
         self.assertIn("很强", text)
-        self.assertIn("chart.xlsx", text)
+        self.assertIn("对照表-{场景}-{时间戳}.xlsx", text)
         self.assertNotIn("应当无效", text)
         self.assertIn(DISCLAIMER[:12], text)
         self.assertIn("冷却空腔，并且在周向均布多条加强筋", text)
@@ -103,11 +104,14 @@ class EmitChartTests(unittest.TestCase):
                 sheet2 = zf.read("xl/worksheets/sheet2.xml").decode("utf-8")
                 sheet3 = zf.read("xl/worksheets/sheet3.xml").decode("utf-8")
                 sheet4 = zf.read("xl/worksheets/sheet4.xml").decode("utf-8")
+                sheet5 = zf.read("xl/worksheets/sheet5.xml").decode("utf-8")
                 styles = zf.read("xl/styles.xml").decode("utf-8")
             self.assertIn("xl/worksheets/sheet4.xml", names)
+            self.assertIn("xl/worksheets/sheet5.xml", names)
             self.assertIn('name="总览"', wb)
             self.assertIn('name="对照表"', wb)
             self.assertIn('name="明细"', wb)
+            self.assertIn('name="路径备忘"', wb)
             self.assertIn('name="图例"', wb)
             self.assertIn("F1", sheet1)
             self.assertIn("HYPERLINK", sheet1)
@@ -117,7 +121,7 @@ class EmitChartTests(unittest.TestCase):
             self.assertIn("FF2563EB", sheet2)
             self.assertIn("对应：权要的冷却腔对应说明书里的冷却空腔。\n差别：", sheet2)
             self.assertIn("查看摘录", sheet2)
-            self.assertNotIn("Very Strong", sheet2 + sheet3 + sheet4)
+            self.assertNotIn("Very Strong", sheet2 + sheet3 + sheet4 + sheet5)
             self.assertIn('min="7" max="7" width="18"', sheet2)
             self.assertIn("返回总览", sheet3)
             self.assertIn("返回对照表", sheet3)
@@ -127,8 +131,14 @@ class EmitChartTests(unittest.TestCase):
             self.assertIn("FF047857", styles)
             self.assertIn("FFFACC15", styles)
             self.assertIn("FFB91C1C", styles)
-            self.assertIn("FF2563EB", sheet4)
-            self.assertIn("<b/>", sheet4)
+            self.assertIn("已覆盖", sheet4)
+            self.assertIn("未覆盖", sheet4)
+            self.assertIn("很强", sheet4)
+            self.assertIn("未见", sheet4)
+            self.assertIn("HYPERLINK", sheet4)
+            self.assertNotIn("应当无效", sheet4)
+            self.assertIn("FF2563EB", sheet5)
+            self.assertIn("<b/>", sheet5)
             self.assertIn("微软雅黑", styles)
             self.assertIn("FF1F4E79", styles)
             self.assertIn("wrapText", styles)
@@ -161,7 +171,7 @@ class EmitChartTests(unittest.TestCase):
                 main(["--json", str(src), "--output-dir", str(out), "--case-id", "demo"]),
                 0,
             )
-            self.assertTrue(list(out.glob("demo_*/chart.xlsx")))
+            self.assertTrue(list(out.glob("demo_*/对照表-无效对照-*.xlsx")))
             self.assertTrue(list(out.glob("demo_*/chart.json")))
             self.assertFalse(list(out.glob("demo_*/chart.md")))
             self.assertFalse(list(out.glob("demo_*/chart.yaml")))
@@ -240,9 +250,107 @@ class EmitChartTests(unittest.TestCase):
             src = Path(tmp) / "in.json"
             src.write_text(json.dumps(_payload(), ensure_ascii=False), encoding="utf-8")
             self.assertEqual(main(["--json", str(src), "--into", str(session)]), 0)
-            self.assertTrue((session / "chart.xlsx").is_file())
+            self.assertTrue((session / "对照表-无效对照-20260929-120000.xlsx").is_file())
             self.assertTrue((session / "intake.json").is_file())
+            self.assertFalse((session / "chart.xlsx").exists())
             self.assertFalse(list(Path(tmp).glob("demo_*")))
+
+    def test_xlsx_named_with_scene_and_stamp(self) -> None:
+        self.assertEqual(
+            chart_xlsx_name({"scene": "patentability"}, "20260929-232749"),
+            "对照表-可专利性-20260929-232749.xlsx",
+        )
+        self.assertEqual(
+            chart_xlsx_name({"scene": "infringement"}, "20260929-232749-2"),
+            "对照表-侵权对照-20260929-232749-2.xlsx",
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            session = Path(tmp) / "20260929-232749"
+            paths = write_chart_bundle(_payload(), into=session)
+            self.assertEqual(paths["xlsx"].name, "对照表-无效对照-20260929-232749.xlsx")
+            raw = _payload()
+            raw["scene"] = "fto"
+            paths = write_chart_bundle(raw, into=session)
+            self.assertEqual(paths["xlsx"].name, "对照表-FTO初筛-20260929-232749.xlsx")
+
+    def test_fto_risk_sheet_needs_review(self) -> None:
+        raw = _payload()
+        raw["scene"] = "fto"
+        chart = normalize_chart(raw)
+        self.assertEqual(chart["cells"][0]["risk"], "高")
+        self.assertTrue(chart["cells"][0]["review_required"])
+        self.assertEqual(chart["cells"][1]["risk"], "未见")
+        self.assertFalse(chart["cells"][1]["review_required"])
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = write_chart_bundle(raw, output_dir=Path(tmp), case_id="fto")
+            with zipfile.ZipFile(paths["xlsx"]) as zf:
+                wb = zf.read("xl/workbook.xml").decode("utf-8")
+                sheet1 = zf.read("xl/worksheets/sheet1.xml").decode("utf-8")
+                sheet4 = zf.read("xl/worksheets/sheet4.xml").decode("utf-8")
+                sheet5 = zf.read("xl/worksheets/sheet5.xml").decode("utf-8")
+        self.assertIn('name="风险清单"', wb)
+        self.assertIn('name="图例"', wb)
+        self.assertNotIn('name="路径备忘"', wb)
+        self.assertIn("须人审", sheet1)
+        self.assertIn("须人审", sheet4)
+        self.assertIn("高", sheet4)
+        self.assertNotIn("可以自由实施", sheet4)
+        self.assertNotIn("构成侵权", sheet4)
+        self.assertIn("高", sheet5)
+
+    def test_infringement_gap_sheet_sorts_weak_first(self) -> None:
+        raw = _payload()
+        raw["scene"] = "infringement"
+        raw["features"].insert(
+            1,
+            {"feature_id": "F2", "claim_no": 1, "text": "密封圈压紧端盖"},
+        )
+        raw["cells"].insert(
+            1,
+            {
+                "feature_id": "F2",
+                "column_id": "D1",
+                "strength": "弱",
+                "quote": "周向均布加强筋。",
+                "analysis": "对应：仅加强筋片段。\n差别：未见密封圈。\n依据：说明书 [0021]。",
+                "source_url": "http://epub.cnipa.gov.cn/patent/CN216600001U",
+                "desc_para": "0021",
+                "covered": ["加强筋"],
+                "missing": ["密封圈"],
+            },
+        )
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = write_chart_bundle(raw, output_dir=Path(tmp), case_id="eou")
+            with zipfile.ZipFile(paths["xlsx"]) as zf:
+                wb = zf.read("xl/workbook.xml").decode("utf-8")
+                sheet4 = zf.read("xl/worksheets/sheet4.xml").decode("utf-8")
+        self.assertIn('name="证据缺口"', wb)
+        self.assertNotIn('name="风险清单"', wb)
+        self.assertIn("待补证据", sheet4)
+        self.assertIn("密封圈", sheet4)
+        self.assertNotIn("构成侵权", sheet4)
+        f3 = sheet4.find('>F3</t>')
+        f2 = sheet4.find('>F2</t>')
+        f1 = sheet4.find('>F1</t>')
+        self.assertGreater(f3, 0)
+        self.assertGreater(f2, f3)
+        self.assertGreater(f1, f2)
+
+    def test_patentability_has_no_scene_sheet(self) -> None:
+        raw = _payload()
+        raw["scene"] = "patentability"
+        with tempfile.TemporaryDirectory() as tmp:
+            paths = write_chart_bundle(raw, output_dir=Path(tmp), case_id="pat")
+            with zipfile.ZipFile(paths["xlsx"]) as zf:
+                names = set(zf.namelist())
+                wb = zf.read("xl/workbook.xml").decode("utf-8")
+                sheet4 = zf.read("xl/worksheets/sheet4.xml").decode("utf-8")
+        self.assertNotIn("xl/worksheets/sheet5.xml", names)
+        self.assertNotIn('name="路径备忘"', wb)
+        self.assertNotIn('name="风险清单"', wb)
+        self.assertNotIn('name="证据缺口"', wb)
+        self.assertIn('name="图例"', wb)
+        self.assertIn("FF2563EB", sheet4)
 
 
 if __name__ == "__main__":

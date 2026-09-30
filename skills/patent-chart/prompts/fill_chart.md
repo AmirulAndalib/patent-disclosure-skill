@@ -41,6 +41,19 @@
 - `quote`：写入**完整段落**（给明细页核对）。对照表导出时按对应短语截取窗口并着色；同一对照对象截取结果相同则显示「同 Fk · [段号]」，悬停批注可看摘录、不跳转。
 - `source_url` / `desc_para`：可点开或可核段号
 
+## 场景页（导出自动生成）
+
+同一套 `cells`。不要另写一份表，不要在格子里下法律结论。
+
+| `scene` | Excel 加页 | 内容 |
+|---------|------------|------|
+| `invalidity` | 路径备忘 | 哪份对照覆盖哪条 Fk、未覆盖、最强、可点出处 |
+| `fto` | 风险清单 | 覆盖强弱 → 风险 高/中/低/未见；高标「须人审」 |
+| `infringement` | 证据缺口 | 弱/未见排前；`missing` 写成待补证据 |
+| `sep` / `patentability` | （不加） | 只用四页矩阵 |
+
+禁止写「应当无效」「构成侵权」「可以自由实施」。
+
 ## 写入 payload 后导出
 
 字段：`scene`、`left`、`features`、`columns`、`cells`、`highlights`。
@@ -51,4 +64,4 @@ python skills/patent-chart/tools/emit_chart.py \
   --into outputs/patent-chart/{案件}/{会话}
 ```
 
-看 `CHART_XLSX:`（给人传）以及 `CHART_JSON:`（再导出）。xlsx 含「总览 / 对照表 / 明细 / 图例」。不要再写 md/yaml，不要把 JSON 全文贴进对话。
+看 `CHART_XLSX:`（给人传）以及 `CHART_JSON:`（再导出）。xlsx 含「总览 / 对照表 / 明细 / 图例」；按 `scene` 自动加场景页（无效→路径备忘，FTO→风险清单，侵权→证据缺口），不要手写这几页。不要再写 md/yaml，不要把 JSON 全文贴进对话。

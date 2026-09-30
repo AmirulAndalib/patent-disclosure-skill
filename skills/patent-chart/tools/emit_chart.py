@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-"""对照表落盘：chart.xlsx 主交付 + chart.json 底稿。不出 yaml/md，不出 html 工作面、不出 docx。"""
+"""对照表落盘：对照表-{场景}-{时间戳}.xlsx 主交付 + chart.json 底稿。不出 yaml/md，不出 html 工作面、不出 docx。"""
 from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -28,7 +29,9 @@ from xlsx_minimal import (
     S_FEATURE,
     S_LABEL,
     S_LINK,
+    S_MID,
     S_NONE,
+    S_WEAK,
     S_WRAP,
     S_ZEBRA,
     STRENGTH_BADGE,
@@ -44,6 +47,25 @@ SCENE_ZH = {
     "sep": "标准必要专利",
     "patentability": "可专利性",
 }
+# 文件名用，避开 / 空格
+SCENE_FILE = {
+    "invalidity": "无效对照",
+    "fto": "FTO初筛",
+    "infringement": "侵权对照",
+    "sep": "标准必要",
+    "patentability": "可专利性",
+}
+_STAMP_IN_NAME = re.compile(r"(\d{8}-\d{6}(?:-\d+)?)$")
+
+
+def _file_stamp(folder: Path, fallback: str) -> str:
+    found = _STAMP_IN_NAME.search(folder.name)
+    return found.group(1) if found else fallback
+
+
+def chart_xlsx_name(chart: dict[str, Any], stamp: str) -> str:
+    scene = SCENE_FILE.get(str(chart.get("scene") or ""), "对照")
+    return f"对照表-{scene}-{stamp}.xlsx"
 DISCLAIMER = (
     "本对照表是特征—证据底稿，**不构成法律意见**，"
     "不构成无效、侵权、自由实施或可专利性结论。重大决策请咨询专利代理师或律师。"
@@ -151,11 +173,14 @@ def normalize_chart(raw: dict[str, Any]) -> dict[str, Any]:
         strength = str(item.get("strength") or "无").strip()
         if strength not in STRENGTHS:
             strength = "无"
+        risk = RISK_FROM_STRENGTH.get(strength, "未见") if scene in ("fto", "infringement") else ""
         cells.append(
             {
                 "feature_id": str(item.get("feature_id") or "").strip(),
                 "column_id": str(item.get("column_id") or "").strip(),
                 "strength": strength,
+                "risk": risk,
+                "review_required": _needs_review(scene, strength),
                 "quote": tidy_cjk_wrap(str(item.get("quote") or "").strip()),
                 "analysis": format_analysis(str(item.get("analysis") or "")),
                 "source_url": str(item.get("source_url") or "").strip(),
@@ -247,13 +272,179 @@ def _cite(cell: dict) -> str:
 def _pending(chart: dict[str, Any]) -> list[str]:
     cmap = _cell_map(chart)
     pending: list[str] = []
+    scene = chart.get("scene") or ""
     for feat in chart.get("features") or []:
         fid = feat["feature_id"]
         for col in chart.get("columns") or []:
             cell = cmap.get((fid, col["id"]))
             if cell is None or cell["strength"] in ("无", "弱") or not cell.get("quote"):
                 pending.append(f"{fid} × {col['id']}")
+            elif scene in ("fto", "infringement") and cell.get("strength") == "强":
+                pending.append(f"{fid} × {col['id']}（须人审）")
     return pending
+
+
+STRENGTH_RANK = {"强": 3, "中": 2, "弱": 1, "无": 0}
+RISK_FROM_STRENGTH = {"强": "高", "中": "中", "弱": "低", "无": "未见"}
+RISK_BADGE = {"高": S_WEAK, "中": S_MID, "低": S_NONE, "未见": S_NONE}
+
+
+def _needs_review(scene: str, token: str) -> bool:
+    return scene in ("fto", "infringement") and token == "强"
+
+
+def _cite_cell(cell: dict[str, Any], col: dict[str, Any]) -> dict[str, Any]:
+    cite = _cite(cell)
+    url = cell.get("source_url") or col.get("source_url") or ""
+    label = cite or ("打开来源" if url else "—")
+    return {
+        "v": cite or url or "—",
+        "s": S_LINK if url else S_WRAP,
+        "link": url or None,
+        "label": label,
+    }
+
+
+def _scene_sheet(chart: dict[str, Any], anchors: dict[tuple[str, str], int]) -> dict[str, Any] | None:
+    scene = chart.get("scene") or ""
+    cols = chart.get("columns") or []
+    cmap = _cell_map(chart)
+    features = chart.get("features") or []
+    if scene == "invalidity":
+        rows: list[list[Any]] = []
+        for feat in features:
+            fid = feat["feature_id"]
+            covered: list[str] = []
+            uncovered: list[str] = []
+            best = "无"
+            best_cell: dict[str, Any] = {}
+            best_col: dict[str, Any] = cols[0] if cols else {}
+            for col in cols:
+                cell = cmap.get((fid, col["id"])) or {}
+                token = cell.get("strength") or "无"
+                tag = f"{col['label'] or col['id']}（{strength_label(token)}）"
+                if token in ("强", "中"):
+                    covered.append(tag)
+                else:
+                    uncovered.append(tag)
+                if STRENGTH_RANK.get(token, 0) > STRENGTH_RANK.get(best, 0):
+                    best = token
+                    best_cell = cell
+                    best_col = col
+            loc_row = anchors.get((fid, best_col.get("id") or ""), 4) if best_col else 4
+            rows.append(
+                [
+                    {"v": fid, "s": S_FEATURE},
+                    {"v": str(feat.get("claim_no") or ""), "s": S_CLAIM_NO},
+                    {"v": feat.get("text") or "", "s": S_WRAP},
+                    {"v": "；".join(covered) or "—", "s": S_WRAP},
+                    {"v": "；".join(uncovered) or "—", "s": S_WRAP},
+                    {"v": strength_label(best), "s": STRENGTH_BADGE.get(best, S_NONE)},
+                    _cite_cell(best_cell, best_col),
+                    {
+                        "v": "查看摘录",
+                        "s": S_LINK,
+                        "loc": f"'明细'!A{loc_row}",
+                        "label": "查看摘录",
+                    },
+                ]
+            )
+        return {
+            "name": "路径备忘",
+            "title": "无效对照 · 覆盖路径（不是无效结论）",
+            "subtitle": "已覆盖 = 该对照对该特征为很强/中等。出处可点开。不构成法律意见。",
+            "headers": ["特征", "权号", "权要原文", "已覆盖", "未覆盖", "最强", "出处", "明细"],
+            "rows": rows,
+            "widths": [9, 7, 36, 28, 28, 12, 28, 12],
+            "row_height": 28,
+            "tab": "7C3AED",
+            "freeze": True,
+        }
+    if scene == "fto":
+        rows = []
+        for feat in features:
+            fid = feat["feature_id"]
+            for col in cols:
+                cell = cmap.get((fid, col["id"])) or {}
+                token = cell.get("strength") or "无"
+                risk = RISK_FROM_STRENGTH.get(token, "未见")
+                loc_row = anchors.get((fid, col["id"]), 4)
+                review = "须人审" if _needs_review("fto", token) else "—"
+                rows.append(
+                    [
+                        {"v": fid, "s": S_FEATURE},
+                        {"v": str(feat.get("claim_no") or ""), "s": S_CLAIM_NO},
+                        {"v": feat.get("text") or "", "s": S_WRAP},
+                        {"v": col["label"] or col["id"], "s": S_WRAP},
+                        {"v": strength_label(token), "s": STRENGTH_BADGE.get(token, S_NONE)},
+                        {"v": risk, "s": RISK_BADGE.get(risk, S_NONE)},
+                        {"v": review, "s": S_WEAK if review == "须人审" else S_WRAP},
+                        {"v": "；".join(cell.get("missing") or []) or "—", "s": S_WRAP},
+                        _cite_cell(cell, col),
+                        {
+                            "v": "查看摘录",
+                            "s": S_LINK,
+                            "loc": f"'明细'!A{loc_row}",
+                            "label": "查看摘录",
+                        },
+                    ]
+                )
+        return {
+            "name": "风险清单",
+            "title": "FTO 初筛 · 覆盖风险（不是自由实施结论）",
+            "subtitle": "风险由覆盖强弱映射：很强→高、中等→中、偏弱→低、未见→未见。高风险必须人审。",
+            "headers": ["特征", "权号", "权要原文", "对照对象", "覆盖强弱", "风险", "人审", "缺口", "出处", "明细"],
+            "rows": rows,
+            "widths": [9, 7, 34, 16, 12, 10, 12, 28, 24, 12],
+            "row_height": 28,
+            "tab": "B91C1C",
+            "freeze": True,
+        }
+    if scene == "infringement":
+        scored: list[tuple[int, list[Any]]] = []
+        for feat in features:
+            fid = feat["feature_id"]
+            for col in cols:
+                cell = cmap.get((fid, col["id"])) or {}
+                token = cell.get("strength") or "无"
+                loc_row = anchors.get((fid, col["id"]), 4)
+                gap = "；".join(cell.get("missing") or []) or (
+                    "（未见对应原文）" if token in ("弱", "无") else "—"
+                )
+                scored.append(
+                    (
+                        STRENGTH_RANK.get(token, 0),
+                        [
+                            {"v": fid, "s": S_FEATURE},
+                            {"v": str(feat.get("claim_no") or ""), "s": S_CLAIM_NO},
+                            {"v": feat.get("text") or "", "s": S_WRAP},
+                            {"v": col["label"] or col["id"], "s": S_WRAP},
+                            {"v": strength_label(token), "s": STRENGTH_BADGE.get(token, S_NONE)},
+                            {"v": "；".join(cell.get("covered") or []) or "—", "s": S_WRAP},
+                            {"v": gap, "s": QUOTE_TINT.get(token, S_WRAP)},
+                            _cite_cell(cell, col),
+                            {
+                                "v": "查看摘录",
+                                "s": S_LINK,
+                                "loc": f"'明细'!A{loc_row}",
+                                "label": "查看摘录",
+                            },
+                        ],
+                    )
+                )
+        scored.sort(key=lambda item: item[0])
+        return {
+            "name": "证据缺口",
+            "title": "侵权 / EoU · 产品证据缺口（不是侵权结论）",
+            "subtitle": "弱格与未见排在前面。待补证据来自该格 missing。不构成法律意见。",
+            "headers": ["特征", "权号", "权要原文", "对照对象", "覆盖强弱", "已对应", "待补证据", "出处", "明细"],
+            "rows": [row for _, row in scored],
+            "widths": [9, 7, 34, 16, 12, 24, 28, 24, 12],
+            "row_height": 28,
+            "tab": "C2410C",
+            "freeze": True,
+        }
+    return None
 
 
 def _paint_md(text: str, highlights: list[dict[str, str]], *, side: str) -> str:
@@ -282,7 +473,7 @@ def render_chart_md(chart: dict[str, Any]) -> str:
         "",
         f"> {DISCLAIMER}",
         "",
-        "预览用。**给人看、给人传的主文件是同目录 `chart.xlsx`**（总览可进入明细；同色底纹见「图例」）。不出 HTML 工作面。",
+        "预览用。**给人看、给人传的主文件是同目录 `对照表-{场景}-{时间戳}.xlsx`**（总览可进入明细；同色底纹见「图例」）。不出 HTML 工作面。",
         "",
         f"- **场景**：{scene}（`{chart['scene']}`）",
         f"- **左列专利**：{left}",
@@ -430,12 +621,14 @@ def render_xlsx_book(chart: dict[str, Any], *, title: str, subtitle: str) -> lis
             cell = cmap.get((fid, col["id"])) or {}
             token = cell.get("strength") or "无"
             loc_row = anchors.get((fid, col["id"]), first)
+            extra_review = " 须人审" if _needs_review(chart.get("scene") or "", token) else ""
+            shown = strength_label(token) + extra_review
             row.append(
                 {
-                    "v": strength_label(token),
+                    "v": shown,
                     "s": HEATMAP.get(token, S_NONE),
                     "loc": f"'明细'!A{loc_row}",
-                    "label": strength_label(token),
+                    "label": shown,
                 }
             )
         row.append(
@@ -588,18 +781,32 @@ def render_xlsx_book(chart: dict[str, Any], *, title: str, subtitle: str) -> lis
             [{"v": "未见", "s": STRENGTH_BADGE["无"]}, {"v": "对照材料中未见对应原文，单元格留空", "s": S_WRAP}, {"v": "", "s": S_WRAP}, {"v": "", "s": S_WRAP}],
             [
                 {"v": "用法", "s": S_LABEL},
-                {"v": "对照表摘录按对应短语截取并着色。「同 Fk · [段号]」悬停批注可看摘录；完整原文在明细。", "s": S_WRAP},
+                {"v": "对照表摘录按对应短语截取并着色。「同 Fk · [段号]」悬停批注可看摘录；完整原文在明细。无效见「路径备忘」，FTO 见「风险清单」，侵权见「证据缺口」。", "s": S_WRAP},
                 {"v": "", "s": S_WRAP},
                 {"v": "", "s": S_WRAP},
             ],
         ]
     )
 
-    return [
+    extra = _scene_sheet(chart, anchors)
+    scene_hint = {
+        "invalidity": "  ·  见「路径备忘」",
+        "fto": "  ·  见「风险清单」；高风险须人审",
+        "infringement": "  ·  见「证据缺口」",
+    }.get(chart.get("scene") or "", "")
+    if chart.get("scene") == "fto":
+        legend_rows.extend(
+            [
+                [{"v": "高", "s": RISK_BADGE["高"]}, {"v": "产品对该特征覆盖很强，须人审（不是侵权结论）", "s": S_WRAP}, {"v": "", "s": S_WRAP}, {"v": "", "s": S_WRAP}],
+                [{"v": "中", "s": RISK_BADGE["中"]}, {"v": "手段对应但不完全对齐，建议人审", "s": S_WRAP}, {"v": "", "s": S_WRAP}, {"v": "", "s": S_WRAP}],
+                [{"v": "低", "s": RISK_BADGE["低"]}, {"v": "仅片段相关", "s": S_WRAP}, {"v": "", "s": S_WRAP}, {"v": "", "s": S_WRAP}],
+            ]
+        )
+    sheets = [
         {
             "name": "总览",
             "title": title,
-            "subtitle": subtitle + "  ·  点击强弱格进入明细",
+            "subtitle": subtitle + scene_hint + "  ·  点击强弱格进入明细",
             "headers": overview_headers,
             "rows": overview_rows,
             "widths": [9, 7, 36] + [14] * len(cols) + [12],
@@ -609,7 +816,7 @@ def render_xlsx_book(chart: dict[str, Any], *, title: str, subtitle: str) -> lis
         {
             "name": "对照表",
             "title": title,
-            "subtitle": subtitle + "  ·  摘录按对应短语截取并着色；「同 Fk」悬停可看摘录",
+            "subtitle": subtitle + scene_hint + "  ·  摘录按对应短语截取并着色；「同 Fk」悬停可看摘录",
             "headers": chart_headers,
             "rows": chart_rows,
             "widths": [9, 7, 34, 14, 52, 40, 18, 20, 12],
@@ -628,6 +835,10 @@ def render_xlsx_book(chart: dict[str, Any], *, title: str, subtitle: str) -> lis
             "tab": "C65911",
             "freeze": True,
         },
+    ]
+    if extra:
+        sheets.append(extra)
+    sheets.append(
         {
             "name": "图例",
             "title": "同色图例与覆盖强弱",
@@ -637,8 +848,9 @@ def render_xlsx_book(chart: dict[str, Any], *, title: str, subtitle: str) -> lis
             "widths": [18, 36, 28, 28],
             "row_height": 24,
             "tab": "5B6B7A",
-        },
-    ]
+        }
+    )
+    return sheets
 
 
 def write_chart_bundle(
@@ -649,14 +861,15 @@ def write_chart_bundle(
     into: Path | None = None,
 ) -> dict[str, Path]:
     chart = normalize_chart(raw)
+    stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
     if into:
         folder = Path(into)
         folder.mkdir(parents=True, exist_ok=True)
     else:
-        stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
         folder = (output_dir or default_output_dir()) / f"{case_id}_{stamp}"
         folder.mkdir(parents=True, exist_ok=True)
-    xlsx_path = folder / "chart.xlsx"
+    stamp = _file_stamp(folder, stamp)
+    xlsx_path = folder / chart_xlsx_name(chart, stamp)
     json_path = folder / "chart.json"
     left_pub = (chart.get("left") or {}).get("pub_number") or ""
     scene = SCENE_ZH.get(chart["scene"], chart["scene"])
